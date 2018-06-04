@@ -1,2 +1,2 @@
 # hokxr
-Using Forge and its AR application to bring our model in Augmented Reality. 
+Using Forge and its AR application to bring our models in Augmented Reality. 
