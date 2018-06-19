@@ -8,10 +8,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\start.js",
+            "program": "${workspaceFolder}/start.js",
             "env": {
-                "FORGE_CLIENT_ID": "J3p1yAy2oaWOBLmpMG2ddyrifxDjgzAh",
-                "FORGE_CLIENT_SECRET": "3tgVys0Sj0p63wAa"
+                "FORGE_CLIENT_ID": "hGCfjhaBUVPoNY6DfgjQgQ9cBu1yApvk",
+                "FORGE_CLIENT_SECRET": "aDM0CV6Mh4jbEXEA"
             }
         }
     ]

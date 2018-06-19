@@ -11,16 +11,7 @@ $(document).ready(function () {
     $('#createBucketModal').on('shown.bs.modal', function () {
       $("#newBucketKey").focus();
     })
-
-    get3LegToken(function(token) {
-    
-      if (!token) {
-          signIn();
-      } else {
-         
-      }
   });
-
   
   function createNewBucket() {
     var bucketKey = $('#newBucketKey').val();
@@ -169,31 +160,3 @@ $(document).ready(function () {
       },
     });
   }
-
-  function signIn() {
-    $.ajax({
-        url: '/user/authenticate',
-        success: function (rootUrl) {
-            location.href = rootUrl;
-        }
-    });
-  }
-
-  function get3LegToken(callback) {
-
-    if (callback) {
-        $.ajax({
-            url: '/user/token',
-            success: function (data) {
-                MyVars.token3Leg = data.token;
-                console.log('Returning new 3 legged token (User Authorization): ' + MyVars.token3Leg);
-                callback(data.token, data.expires_in);
-            }
-        });
-    } else {
-        console.log('Returning saved 3 legged token (User Authorization): ' + MyVars.token3Leg);
-
-        return MyVars.token3Leg;
-    }
-}
-

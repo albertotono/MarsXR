@@ -3,7 +3,7 @@ var viewerApp;
 function launchViewer(urn) {
   var options = {
     env: 'AutodeskProduction',
-    getAccessToken: get3LegToken
+    getAccessToken: getForgeToken
   };
   var documentId = 'urn:' + urn;
   Autodesk.Viewing.Initializer(options, function onInitialized() {
@@ -68,4 +68,3 @@ function getForgeToken(callback) {
     }
   });
 }
-
