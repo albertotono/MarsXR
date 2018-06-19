@@ -100,6 +100,12 @@ $(document).ready(function () {
               uploadFile(treeNode);
             },
             icon: 'glyphicon glyphicon-cloud-upload'
+          },
+          bucketDelete: {
+            "label": "Delete bucket",
+            "action": function (obj) {
+                deleteBucket(MyVars.selectedNode.id)
+            }
           }
         };
         break;
@@ -112,6 +118,12 @@ $(document).ready(function () {
               translateObject(treeNode.data.id);
             },
             icon: 'glyphicon glyphicon-eye-open'
+          },
+          fileDelete: {
+            "label": "Delete file",
+            "action": function (obj) {
+                deleteFile(MyVars.selectedNode.id)
+            }
           }
         };
         break;
@@ -120,6 +132,39 @@ $(document).ready(function () {
     return items;
   }
   
+  function deleteFile(id) {
+
+    console.log("Delete file = " + id);
+    $.ajax({
+        url: '/dm/files/' + encodeURIComponent(id),
+        type: 'DELETE'
+    }).done(function (data) {
+        console.log(data);
+        if (data.status === 'success') {
+            $('#forgeFiles').jstree(true).refresh()
+            showProgress("File deleted", "success")
+        }
+    }).fail(function(err) {
+        console.log('DELETE /dm/files/ call failed\n' + err.statusText);
+    });
+}
+
+function deleteBucket(id) {
+    console.log("Delete bucket = " + id);
+    $.ajax({
+        url: '/dm/buckets/' + encodeURIComponent(id),
+        type: 'DELETE'
+    }).done(function (data) {
+        console.log(data);
+        if (data.status === 'success') {
+            $('#forgeFiles').jstree(true).refresh()
+            showProgress("Bucket deleted", "success")
+        }
+    }).fail(function(err) {
+        console.log('DELETE /dm/buckets/ call failed\n' + err.statusText);
+    });
+}
+
   function uploadFile(node) {
     $('#hiddenUploadField').click();
     $('#hiddenUploadField').change(function () {
