@@ -19,6 +19,9 @@ var config = require('./config');
 
 var forgeSDK = require('forge-apis');
 
+// actually perform the token operation
+var oauth = require('./oauth');
+
 router.post('/buckets', jsonParser, function (req, res) {
     var tokenSession = new token(req.session);
 
@@ -93,18 +96,19 @@ router.get('/files/:id/publicurl', function (req, res) {
 })
 
 router.delete('/buckets/:id', function (req, res) {
-    var tokenSession = new token(req.session)
+    oauth.getTokenInternal().then(function (credentials) {
 
-    var id = req.params.id
+        var id = req.params.id
 
-    var buckets = new forgeSDK.BucketsApi();
-    buckets.deleteBucket(id, tokenSession.getOAuth(), tokenSession.getCredentials())
-      .then(function (data) {
-          res.json({ status: "success" })
-      })
-      .catch(function (error) {
-          res.status(error.statusCode).end(error.statusMessage);
-      })
+        var buckets = new forgeSDK.BucketsApi();
+        buckets.deleteBucket(id, oauth.OAuthClient(), credentials)
+        .then(function (data) {
+            res.json({ status: "success" })
+        })
+        .catch(function (error) {
+            res.status(error.statusCode).end(error.statusMessage);
+        })
+    });
 })
 
 
@@ -222,31 +226,32 @@ router.get('/treeNode', function (req, res) {
     var id = decodeURIComponent(req.query.id);
     console.log("treeNode for " + id);
 
-    var tokenSession = new token(req.session);
+    oauth.getTokenInternal().then(function (credentials) {
 
-    if (id === '#') {
-        // # stands for ROOT
-        var buckets = new forgeSDK.BucketsApi();
+        if (id === '#') {
+            // # stands for ROOT
+            var buckets = new forgeSDK.BucketsApi();
 
-        buckets.getBuckets({}, tokenSession.getOAuth(), tokenSession.getCredentials())
+            buckets.getBuckets({}, oauth.OAuthClient(), credentials)
+                .then(function (data) {
+                    res.json(makeTree(data.body.items, true));
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {
+            var objects = new forgeSDK.ObjectsApi();
+
+            objects.getObjects(id, {}, oauth.OAuthClient(), credentials)
             .then(function (data) {
-                res.json(makeTree(data.body.items, true));
+                res.json(makeTree(data.body.items, false));
             })
             .catch(function (error) {
                 console.log(error);
             });
-    } else {
-        var objects = new forgeSDK.ObjectsApi();
 
-        objects.getObjects(id, {}, tokenSession.getOAuth(), tokenSession.getCredentials())
-          .then(function (data) {
-              res.json(makeTree(data.body.items, false));
-          })
-          .catch(function (error) {
-              console.log(error);
-          });
-
-    }
+        }
+    });
 });
 
 /////////////////////////////////////////////////////////////////
@@ -261,7 +266,7 @@ function makeTree(items, isBucket) {
         var treeItem = {
             id: isBucket ? item.bucketKey : item.objectId,
             text: isBucket ? item.bucketKey + " [" + item.policyKey + "]" : item.objectKey,
-            type: isBucket ? "bucket" : "file",
+            type: isBucket ? "bucket" : "object",
             sha1: item.sha1,
             children: isBucket
         };

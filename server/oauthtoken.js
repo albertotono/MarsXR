@@ -12,7 +12,7 @@ var oauth = require('./oauth');
 
 // Endpoint to return a 2-legged access token
 router.get('/api/forge/oauth/token', function (req, res) {
-    oauth.getTokenPublic().then(function (credentials) {
+    oauth.getTokenPublic(req).then(function (credentials) {
         res.json({ access_token: credentials.access_token, expires_in: credentials.expires_in });
     }).catch(function (error) {
         res.status(500).end(error);

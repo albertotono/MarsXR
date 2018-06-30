@@ -1,3 +1,7 @@
+var MyVars = {
+  keepTrying: true
+};
+
 $(document).ready(function () {
     prepareAppBucketTree();
     $('#refreshBuckets').click(function () {
@@ -37,7 +41,7 @@ $(document).ready(function () {
       'core': {
         'themes': { "icons": true },
         'data': {
-          "url": '/api/forge/oss/buckets',
+          "url": '/dm/treeNode',
           "dataType": "json",
           'multiple': false,
           "data": function (node) {
@@ -63,10 +67,13 @@ $(document).ready(function () {
       contextmenu: { items: autodeskCustomMenu }
     }).on('loaded.jstree', function () {
       $('#appBuckets').jstree('open_all');
-    }).bind("activate_node.jstree", function (evt, data) {
+    }).bind("select_node.jstree", function (evt, data) {
+      var urn = base64encode(data.node.id);
+      MyVars.selectedNode = data.node;
+      MyVars.selectedUrn = urn;
       if (data != null && data.node != null && data.node.type == 'object') {
         $("#forgeViewer").empty();
-        var urn = data.node.id;
+        
         getForgeToken(function (access_token) {
           jQuery.ajax({
             url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/' + urn + '/manifest',
@@ -86,6 +93,29 @@ $(document).ready(function () {
       }
     });
   }
+
+  function base64encode(str) {
+    var ret = "";
+    if (window.btoa) {
+        ret = window.btoa(str);
+    } else {
+        // IE9 support
+        ret = window.Base64.encode(str);
+    }
+
+    // Remove ending '=' signs
+    // Use _ instead of /
+    // Use - insteaqd of +
+    // Have a look at this page for info on "Unpadded 'base64url' for "named information" URI's (RFC 6920)"
+    // which is the format being used by the Model Derivative API
+    // https://en.wikipedia.org/wiki/Base64#Variants_summary_table
+    var ret2 = ret.replace(/=/g, '').replace(/[/]/g, '_').replace(/[+]/g, '-');
+
+    console.log('base64encode result = ' + ret2);
+
+    return ret2;
+}
+
   
   function autodeskCustomMenu(autodeskNode) {
     var items;
@@ -141,7 +171,7 @@ $(document).ready(function () {
     }).done(function (data) {
         console.log(data);
         if (data.status === 'success') {
-            $('#forgeFiles').jstree(true).refresh()
+            $('#appBuckets').jstree(true).refresh()
             showProgress("File deleted", "success")
         }
     }).fail(function(err) {
@@ -157,7 +187,7 @@ function deleteBucket(id) {
     }).done(function (data) {
         console.log(data);
         if (data.status === 'success') {
-            $('#forgeFiles').jstree(true).refresh()
+            $('#appBuckets').jstree(true).refresh()
             showProgress("Bucket deleted", "success")
         }
     }).fail(function(err) {

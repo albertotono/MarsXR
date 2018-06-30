@@ -6,19 +6,21 @@ var forgeSDK = require('forge-apis');
 // Forge config information, such as client ID and secret
 var config = require('./config');
 
+var token = require('./token');
+
 // Cache of the access tokens
 var _cached = [];
 
 module.exports = {
-    getTokenPublic: function () {
-        return this.OAuthRequest(config.scopePublic, 'public');
+    getTokenPublic: function (req) {
+        return this.OAuthRequest(config.scopePublic, 'public', req);
     },
 
     getTokenInternal: function () {
         return this.OAuthRequest(config.scopeInternal, 'internal');
     },
 
-    OAuthRequest: function (scopes, cache) {
+    OAuthRequest: function (scopes, cache, req) {
         var client_id = config.credentials.client_id;
         var client_secret = config.credentials.client_secret;
         var forgeOAuth = this.OAuthClient(scopes);
