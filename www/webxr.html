@@ -87,7 +87,8 @@
 					this.scene.add(directionalLight)
 					
 					// Add the boom box
-					loadGLTF('webxr-polyfill/examples/models/BoomBox/glTF-pbrSpecularGlossiness/BoomBox.gltf').then(gltf => {
+					loadGLTF('models/mitredwood/scene.gltf').then(gltf => {
+					//loadGLTF('webxr-polyfill/examples/models/BoomBox/glTF-pbrSpecularGlossiness/BoomBox.gltf').then(gltf => {
 						gltf.scene.scale.set(15, 15, 15)
 						gltf.scene.position.set(0, 0, 0)
 						gltf.scene.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
