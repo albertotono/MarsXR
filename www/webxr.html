@@ -51,8 +51,10 @@
 			for groups of content that are positioned relative to some surface or other feature.
 			*/
 			class HitTestExample extends XRExampleBase {
+				
 				constructor(domElement){
 					super(domElement, false)
+					this.modelGroup = new THREE.Group() 
 					// A message at the bottom of the screen that shows whether a surface has been found
 					this._messageEl = document.createElement('div')
 					this.el.appendChild(this._messageEl)
@@ -77,7 +79,7 @@
 					var axesHelper = AxesHelper( 0.2 );
 		            this.floorGroup.add( axesHelper );
 					this.floorGroup.add(box)
-
+					
 					// Add a few lights
 					this.scene.add(new THREE.AmbientLight('#FFF', 0.2))
 					let directionalLight = new THREE.DirectionalLight('#FFF', 0.6)
@@ -87,7 +89,7 @@
 					// Add the boom box
 					loadGLTF('webxr-polyfill/examples/models/BoomBox/glTF-pbrSpecularGlossiness/BoomBox.gltf').then(gltf => {
 						gltf.scene.scale.set(15, 15, 15)
-						gltf.scene.position.set(0, 1, -1.2)
+						gltf.scene.position.set(0, 0, 0)
 						gltf.scene.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
 
 						gltf.scene.traverse(node => {
@@ -97,8 +99,8 @@
 							}
 						})
 
-						this.floorGroup.add(gltf.scene)
-						this.glft = gltf
+						//this.floorGroup.add(gltf.scene)
+						this.modelGroup.add(gltf.scene)
 						
 					}).catch((...params) =>{
 						console.error('could not load gltf', ...params)
@@ -126,7 +128,8 @@
 							this._messageEl.innerHTML = 'miss'
 						} else {
 							this._messageEl.innerHTML = 'hit'
-							this.addAnchoredNode(anchorOffset, this._createSceneGraphNode())
+							//this.addAnchoredNode(anchorOffset, this._createSceneGraphNode())
+							this.addAnchoredNode(anchorOffset, this.modelGroup)
 						}
 					}).catch(err => {
 						console.error('Error in hit test', err)
@@ -142,7 +145,7 @@
 					mesh.position.set(0, 0.05, 0)
 					
 					group.add(mesh)
-					//group.add(this.gltf.scene)
+					
 					return group
 				}
 			}
