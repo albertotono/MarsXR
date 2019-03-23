@@ -7,3 +7,4 @@
 You can view the experience here and test in different browser to see how actions are transferes using soket.io
 
 http://hokxr.herokuapp.com/
+http://hokxr.herokuapp.com/webXR.html
